@@ -1,6 +1,15 @@
 const Student = require("../models/Studentmodel");
+const Institution = require("../models/Institutionmodel"); // Ensure Institution model is imported
 const Event = require("../models/Eventmodel");
 const bcrypt = require("bcryptjs");
+const Otp = require("../models/Otpmodel"); // Corrected import to just 'Otp' assuming it's in models/Otp.js
+
+// Import the services and utilities
+const {
+  sendOtpEmail,
+  sendWelcomeEmailStudent, // Ensure this is imported correctly from emailService
+} = require("../services/emailServices"); // Corrected import path
+const { generateOtp } = require("../utils/OtpGenerator"); // Corrected import path
 
 async function studentmydetails(req, res) {
   const studentid = req.studentid;
@@ -10,25 +19,6 @@ async function studentmydetails(req, res) {
     res.status(200).json(student);
   } catch (error) {
     res.status(500).json({ error: "error in fetching student details." });
-  }
-}
-
-async function addstudent(req, res) {
-  const { NameOfStudent, StudentEmail, StudentPassword } = req.body;
-  try {
-    const existing = await Student.findOne({ StudentEmail });
-    if (existing)
-      return res.status(409).json({ error: "email already registered." }); // 409 Conflict
-
-    const HashedPassword = await bcrypt.hash(StudentPassword, 10);
-    const newStudent = await Student.create({
-      NameOfStudent,
-      StudentEmail,
-      StudentPassword: HashedPassword,
-    });
-    res.status(201).json(newStudent);
-  } catch (error) {
-    res.status(500).json({ error: "error in registering student." });
   }
 }
 
@@ -44,7 +34,9 @@ async function enrollstudentinevent(req, res) {
 
     // Check if already enrolled
     if (event.ParticipantId.includes(studentid)) {
-      return res.status(409).json({ error: "student is already enrolled in event." }); // 409 Conflict
+      return res
+        .status(409)
+        .json({ error: "student is already enrolled in event." }); // 409 Conflict
     }
 
     // Enroll student
@@ -63,8 +55,124 @@ async function enrollstudentinevent(req, res) {
   }
 }
 
+/**
+ * Step 1: Send OTP for Email Verification
+ * This function will send an OTP email and save the temporary data.
+ */
+async function sendVerificationOtp(req, res) {
+  const { NameOfStudent, StudentEmail, StudentPassword } = req.body;
+
+  if (!NameOfStudent || !StudentEmail || !StudentPassword) {
+    return res
+      .status(400)
+      .json({ error: "Name, email, and password are required." });
+  }
+
+  try {
+    // Check if email is already registered as a Student
+    const existingStudent = await Student.findOne({ StudentEmail });
+    if (existingStudent) {
+      return res.status(409).json({ error: "Email already registered as a Student." });
+    }
+
+    // Check if email is already registered as an Institution
+    const existingInstitution = await Institution.findOne({ InstitutionEmail: StudentEmail }); // <--- CORRECTED THIS LINE
+    if (existingInstitution) {
+      return res.status(409).json({ error: "Email already registered as an Institution." });
+    }
+
+    const otp = generateOtp();
+    const HashedPassword = await bcrypt.hash(StudentPassword, 10);
+
+    await Otp.findOneAndUpdate(
+      { email: StudentEmail },
+      {
+        otp,
+        name: NameOfStudent,
+        password: HashedPassword,
+      },
+      { upsert: true, new: true, runValidators: true }
+    );
+
+    const emailResult = await sendOtpEmail(StudentEmail, otp);
+
+    if (emailResult.success) {
+      res
+        .status(200)
+        .json({ message: "OTP sent successfully. Please check your email." });
+    } else {
+      console.error("Error sending OTP email:", emailResult.error);
+      res.status(500).json({ error: "Failed to send OTP email." });
+    }
+  } catch (error) {
+    console.error("Error in sendVerificationOtp:", error);
+    res.status(500).json({ error: "Error during the OTP sending process." });
+  }
+}
+
+/**
+ * Step 2: Verify OTP and Complete Registration
+ * This function will verify the OTP, create the student, and then send the welcome email.
+ */
+async function registerStudent(req, res) {
+  const { StudentEmail, otp } = req.body;
+
+  if (!StudentEmail || !otp) {
+    return res.status(400).json({ error: "Email and OTP are required." });
+  }
+
+  try {
+    const otpRecord = await Otp.findOne({ email: StudentEmail, otp });
+
+    if (!otpRecord) {
+      return res.status(400).json({ error: "Invalid or expired OTP." });
+    }
+
+    // IMPORTANT: Add checks for name and password from otpRecord
+    if (!otpRecord.name || !otpRecord.password) {
+      console.error("OTP record missing name or password:", otpRecord);
+      return res
+        .status(400)
+        .json({
+          error: "Incomplete OTP record. Please try registration again.",
+        });
+    }
+
+    // Final check for existing student before creating
+    const existingStudent = await Student.findOne({ StudentEmail });
+    if (existingStudent) {
+      await Otp.deleteOne({ _id: otpRecord._id });
+      return res.status(409).json({ error: "Email already registered as a Student." });
+    }
+    
+    // Final check if an institution with this email already exists (safety check)
+    const existingInstitution = await Institution.findOne({ InstitutionEmail: StudentEmail }); // <--- CORRECTED THIS LINE
+    if (existingInstitution) {
+      await Otp.deleteOne({ _id: otpRecord._id }); // Clean up the OTP record
+      return res.status(409).json({ error: "Email already registered as an Institution." });
+    }
+
+    const newStudent = await Student.create({
+      NameOfStudent: otpRecord.name,
+      StudentEmail: otpRecord.email,
+      StudentPassword: otpRecord.password,
+    });
+
+    await Otp.deleteOne({ _id: otpRecord._id });
+
+    await sendWelcomeEmailStudent(StudentEmail);
+
+    res.status(201).json(newStudent);
+  } catch (error) {
+    console.error("Error in registerStudent:", error); // This will show the detailed error in your backend console
+    res.status(500).json({ error: "Error in registering student." });
+  }
+}
+
+// Update the module exports to include the new functions
 module.exports = {
-  addstudent,
-  enrollstudentinevent,
   studentmydetails,
+  enrollstudentinevent,
+  sendVerificationOtp,
+  registerStudent,
 };

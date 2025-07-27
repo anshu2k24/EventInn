@@ -1,35 +1,75 @@
 const express = require("express");
 const router = express.Router();
-const {addstudent,enrollstudentinevent,studentmydetails} = require("../controllers/studentcontrollers.js")
+const {
+  sendVerificationOtp,
+  registerStudent,
+  enrollstudentinevent,
+  studentmydetails,
+} = require("../controllers/studentcontrollers.js");
+// const {addstudent,enrollstudentinevent,studentmydetails} = require("../controllers/studentcontrollers.js")
 // const {addstudent,loginstudent,enrollstudentinevent} = require("../controllers/studentcontrollers.js")
-const {addinstitution,addevent,getallevents,institutionmydetails,updateevent} = require("../controllers/institutioncontrollers.js")
-const {loginstudent,logininstitution} = require("../controllers/authcontrollers.js")
-const {authenticateinstitution,authenticatestudent} = require("../middlewares/auth")
+const {
+  // addinstitution,
+  sendVerificationOtpInstitution,
+  registerInstitution, 
+  addevent,
+  getallevents,
+  institutionmydetails,
+  updateevent,
+} = require("../controllers/institutioncontrollers.js");
+const {
+  loginstudent,
+  logininstitution,
+} = require("../controllers/authcontrollers.js");
+const {
+  authenticateinstitution,
+  authenticatestudent,
+} = require("../middlewares/auth");
 
 //student section
+// New registration routes
+// Step 1: Send OTP for verification
+router.post("/student/send-otp", sendVerificationOtp);
+// Step 2: Register student after OTP verification
+router.post("/student/register", registerStudent);
 //registration
-router.post("/student/reg", addstudent);
+// router.post("/student/reg", addstudent);
 //login
 router.post("/student/login", loginstudent);
 //enroll in event
-router.patch("/student/enroll/:eventid",authenticatestudent,enrollstudentinevent);
+router.patch(
+  "/student/enroll/:eventid",
+  authenticatestudent,
+  enrollstudentinevent
+);
 //student dashboard
-router.get("/student/mypage",authenticatestudent,studentmydetails)
-
+router.get("/student/mypage", authenticatestudent, studentmydetails);
 
 //institution section
 //registration
-router.post("/institution/reg", addinstitution);
+// Step 1: Send OTP for verification for institutions
+router.post("/institution/send-otp", sendVerificationOtpInstitution);
+// Step 2: Register institution after OTP verification
+router.post("/institution/register", registerInstitution);
+// router.post("/institution/reg", addinstitution);
 //login
 router.post("/institution/login", logininstitution);
 //add event
-router.post("/institution/addevent",authenticateinstitution,addevent);
+router.post("/institution/addevent", authenticateinstitution, addevent);
 //update event
-router.patch("/institution/updateevent/:eventid",authenticateinstitution,updateevent);
+router.patch(
+  "/institution/updateevent/:eventid",
+  authenticateinstitution,
+  updateevent
+);
 //add event with 1 collaborator institute
 // router.post("/institution/addevent",authenticateinstitution,addevent);
 //institution dashboard
-router.get("/institution/mypage",authenticateinstitution,institutionmydetails)
+router.get(
+  "/institution/mypage",
+  authenticateinstitution,
+  institutionmydetails
+);
 //all events
 router.get("/", getallevents);
 
