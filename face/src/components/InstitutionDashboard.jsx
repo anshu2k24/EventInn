@@ -198,6 +198,7 @@ function InstitutionDashboard() {
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           required
           style={{
+            color: "#000000",
             border: '2px solid #e4b9b9',
             borderRadius: '12px',
             padding: 'clamp(0.75rem, 2vw, 1rem)',
@@ -222,6 +223,7 @@ function InstitutionDashboard() {
           required
           rows="3"
           style={{
+            color: "#000000",
             border: '2px solid #e4b9b9',
             borderRadius: '12px',
             padding: 'clamp(0.75rem, 2vw, 1rem)',
@@ -248,6 +250,7 @@ function InstitutionDashboard() {
             onChange={(e) => setForm({ ...form, start: e.target.value })}
             required
             style={{
+              color: "#808080",
               border: '2px solid #e4b9b9',
               borderRadius: '12px',
               padding: 'clamp(0.75rem, 2vw, 1rem)',
@@ -271,6 +274,7 @@ function InstitutionDashboard() {
             onChange={(e) => setForm({ ...form, end: e.target.value })}
             required
             style={{
+              color: "#808080",
               border: '2px solid #e4b9b9',
               borderRadius: '12px',
               padding: 'clamp(0.75rem, 2vw, 1rem)',
