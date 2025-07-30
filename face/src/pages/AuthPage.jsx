@@ -9,7 +9,7 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userName, setUserName] = useState(""); // Used for NameOfStudent or NameOfInstitution
+  const [userName, setUserName] = useState("");
   const [userType, setUserType] = useState("Student");
 
   // OTP specific states
@@ -29,9 +29,9 @@ export default function AuthPage() {
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false); // For login and institution register
 
   const navigate = useNavigate();
-  const base_url = "http://localhost:5000/services"; // Define base_url once
+  const base_url = "http://localhost:5000/services";
 
-  // Effect to check token validity on component mount
+  // Effect to check token validity 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token && isTokenValid(token)) {
@@ -52,7 +52,7 @@ export default function AuthPage() {
       // Timer ran out, allow resend
       setOtpSent(false);
     }
-    return () => clearInterval(interval); // Cleanup on unmount or dependency change
+    return () => clearInterval(interval);
   }, [otpSent, timer]);
 
   // Function to display custom messages
