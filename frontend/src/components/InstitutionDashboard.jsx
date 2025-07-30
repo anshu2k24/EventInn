@@ -394,10 +394,12 @@ function InstitutionDashboard() {
                       setEditForm({ ...editForm, name: e.target.value })
                     }
                     style={{
-                      color: '#000000',
+                      color: '#000',
                       border: '2px solid #e4b9b9',
                       borderRadius: '8px',
-                      fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                      fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                      backgroundColor: '#fff',
+                      WebkitTextFillColor: '#000',
                     }}
                   />
                   <textarea
@@ -409,10 +411,12 @@ function InstitutionDashboard() {
                     }
                     rows="2"
                     style={{
-                      color: '#000000',
+                      color: '#000',
                       border: '2px solid #e4b9b9',
                       borderRadius: '8px',
-                      fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                      fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                      backgroundColor: '#fff',
+                      WebkitTextFillColor: '#000',
                     }}
                   />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -424,10 +428,12 @@ function InstitutionDashboard() {
                         setEditForm({ ...editForm, start: e.target.value })
                       }
                       style={{
-                        color: '#000000',
+                        color: '#000',
                         border: '2px solid #e4b9b9',
                         borderRadius: '8px',
-                        fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                        fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                        backgroundColor: '#fff',
+                        WebkitTextFillColor: '#000',
                       }}
                     />
                     <input
@@ -438,10 +444,12 @@ function InstitutionDashboard() {
                         setEditForm({ ...editForm, end: e.target.value })
                       }
                       style={{
-                        color: '#000000',
+                        color: '#000',
                         border: '2px solid #e4b9b9',
                         borderRadius: '8px',
-                        fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
+                        fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+                        backgroundColor: '#fff',
+                        WebkitTextFillColor: '#000',
                       }}
                     />
                   </div>
