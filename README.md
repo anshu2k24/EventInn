@@ -1,3 +1,5 @@
+<!-- One-liner description for SEO + GitHub preview -->
+Full-stack MERN event management app with OTP auth, student & institution dashboards, and email onboarding — deployed via Vercel & Render.
 # 🎉 EventInn — Full-Stack MERN Campus Event Platform
 
 **EventInn** is a full-stack event management platform where institutions can post events and students can register for them — built with **MongoDB, Express, React, Node.js**, and styled with **TailwindCSS**.
