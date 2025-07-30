@@ -10,7 +10,8 @@ function InstitutionDashboard() {
   const [editEventId, setEditEventId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const navigate = useNavigate();
-  const base_url = "http://localhost:5000/services";
+  // const base_url = "http://localhost:5000/services";
+  const base_url = "https://eventinn.onrender.com/services";
   const token = localStorage.getItem("token");
 
   useEffect(() => {

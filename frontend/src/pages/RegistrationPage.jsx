@@ -25,7 +25,8 @@ function RegistrationPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const base_url = "http://localhost:5000/services";
+    const base_url = "https://eventinn.onrender.com/services";
+    // const base_url = "http://localhost:5000/services";
     const endpoint =( userType == "Student") ? "/student/reg" : "/institution/reg";
     const payload = ( userType == "Student") ? {NameOfStudent:userName,StudentEmail : email,StudentPassword : password} : {NameOfInstitution:userName,InstitutionEmail : email,InstitutionPassword : password}
 

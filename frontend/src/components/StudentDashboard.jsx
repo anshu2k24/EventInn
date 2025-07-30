@@ -7,7 +7,8 @@ function StudentDashboard() {
   const [student, setStudent] = useState(null);
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
-  const base_url = "http://localhost:5000/services";
+  const base_url = "https://eventinn.onrender.com/services";
+  // const base_url = "http://localhost:5000/services";
 
   const token = localStorage.getItem("token");
 

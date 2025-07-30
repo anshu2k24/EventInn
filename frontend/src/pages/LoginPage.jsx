@@ -23,7 +23,8 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const base_url = "http://localhost:5000/services";
+    const base_url = "https://eventinn.onrender.com/services";
+    // const base_url = "http://localhost:5000/services";
     const endpoint =( userType == "Student") ? "/student/login" : "/institution/login";
     const payload = ( userType == "Student") ? {StudentEmail : email,StudentPassword : password} : {InstitutionEmail : email,InstitutionPassword : password}
 

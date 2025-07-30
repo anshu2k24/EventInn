@@ -13,7 +13,8 @@ function Home() {
   // State for the events that are actually displayed after filtering
   const [events, setEvents] = useState([]);
   const usertype = localStorage.getItem("userType");
-  const base_url = "http://localhost:5000/services";
+  // const base_url = "http://localhost:5000/services";
+  const base_url = "https://eventinn.onrender.com/servicess";
 
   // --- Filter States ---
   const [dateFilter, setDateFilter] = useState("upcoming"); // 'upcoming', 'ongoing', 'past', 'all'
