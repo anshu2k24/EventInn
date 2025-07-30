@@ -14,8 +14,9 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: 'http://localhost:5173', // frontend URL
-    credentials: true // only needed if you're using cookies
+    origin: 'https://eventinn.vercel.app/', // frontend URL
+    // origin: 'http://localhost:5173', // frontend URL
+    credentials: true 
   }));
 
 app.use("/services",eventinnroutes);
