@@ -394,6 +394,7 @@ function InstitutionDashboard() {
                       setEditForm({ ...editForm, name: e.target.value })
                     }
                     style={{
+                      color: '#000000',
                       border: '2px solid #e4b9b9',
                       borderRadius: '8px',
                       fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
@@ -408,6 +409,7 @@ function InstitutionDashboard() {
                     }
                     rows="2"
                     style={{
+                      color: '#000000',
                       border: '2px solid #e4b9b9',
                       borderRadius: '8px',
                       fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
@@ -422,6 +424,7 @@ function InstitutionDashboard() {
                         setEditForm({ ...editForm, start: e.target.value })
                       }
                       style={{
+                        color: '#000000',
                         border: '2px solid #e4b9b9',
                         borderRadius: '8px',
                         fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
@@ -435,6 +438,7 @@ function InstitutionDashboard() {
                         setEditForm({ ...editForm, end: e.target.value })
                       }
                       style={{
+                        color: '#000000',
                         border: '2px solid #e4b9b9',
                         borderRadius: '8px',
                         fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
