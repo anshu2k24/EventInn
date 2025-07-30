@@ -2,16 +2,15 @@ const Institution = require("../models/Institutionmodel");
 const Student = require("../models/Studentmodel"); // Ensure Student model is imported
 const Event = require("../models/Eventmodel");
 const bcrypt = require("bcryptjs");
-const Otp = require("../models/Otpmodel"); // Corrected import to just 'Otp' assuming it's in models/Otp.js
+const Otp = require("../models/Otpmodel");
 
 // Import the email and OTP utilities
 const {
   sendOtpEmail,
-  sendWelcomeEmailInstitution, // Ensure this is imported correctly from emailService
-} = require("../services/emailServices"); // Corrected import path
-const { generateOtp } = require("../utils/OtpGenerator"); // Corrected import path
+  sendWelcomeEmailInstitution, 
+} = require("../services/emailServices");
+const { generateOtp } = require("../utils/OtpGenerator");
 
-// Your existing functions remain unchanged
 async function institutionmydetails(req, res) {
   const institutionid = req.institutionid;
   try {
@@ -111,12 +110,6 @@ async function getallevents(req, res) {
   }
 }
 
-// --- NEW OTP-BASED REGISTRATION FLOW FOR INSTITUTIONS ---
-
-/**
- * Step 1: Send OTP for Email Verification for Institutions
- * This function will be called on a new route (e.g., POST /api/institution/send-otp)
- */
 async function sendVerificationOtpInstitution(req, res) {
   const { NameOfInstitution, InstitutionEmail, InstitutionPassword } = req.body;
 
@@ -139,25 +132,23 @@ async function sendVerificationOtpInstitution(req, res) {
       return res.status(409).json({ error: "Email already registered as a Student." });
     }
 
-    const otp = generateOtp(); // Use the utility function
+    const otp = generateOtp(); 
     const HashedPassword = await bcrypt.hash(InstitutionPassword, 10);
 
-    // Find and update or create a new OTP record for the institution
     await Otp.findOneAndUpdate(
-      { email: InstitutionEmail }, // Use 'email' field in Otp model
+      { email: InstitutionEmail },
       {
         otp,
-        name: NameOfInstitution, // Store temporary name
-        password: HashedPassword, // Store temporary hashed password
+        name: NameOfInstitution,
+        password: HashedPassword, 
       },
       { upsert: true, new: true, runValidators: true }
     );
 
-    // Send the OTP email using the email service
+
     const emailResult = await sendOtpEmail(InstitutionEmail, otp);
 
     if (emailResult.success) {
-      // Respond to the client that the OTP has been sent
       res
         .status(200)
         .json({
@@ -165,7 +156,6 @@ async function sendVerificationOtpInstitution(req, res) {
             "OTP sent successfully. Please check your email to complete registration.",
         });
     } else {
-      // Handle email sending failure
       console.error("Error sending OTP email:", emailResult.error);
       res.status(500).json({ error: "Failed to send OTP email." });
     }
@@ -177,10 +167,6 @@ async function sendVerificationOtpInstitution(req, res) {
   }
 }
 
-/**
- * Step 2: Verify OTP and Complete Institution Registration
- * This function will be called on a new route (e.g., POST /api/institution/register)
- */
 async function registerInstitution(req, res) {
   const { InstitutionEmail, otp } = req.body;
 
@@ -189,14 +175,11 @@ async function registerInstitution(req, res) {
   }
 
   try {
-    // Find the OTP record for the provided email and OTP
     const otpRecord = await Otp.findOne({ email: InstitutionEmail, otp });
 
     if (!otpRecord) {
       return res.status(400).json({ error: "Invalid or expired OTP." });
     }
-
-    // IMPORTANT: Add checks for name and password from otpRecord
     if (!otpRecord.name || !otpRecord.password) {
       console.error(
         "OTP record missing name or password for institution:",
@@ -210,34 +193,28 @@ async function registerInstitution(req, res) {
         });
     }
 
-    // Check if an institution with this email already exists (safety check)
     const existingInstitution = await Institution.findOne({ InstitutionEmail });
     if (existingInstitution) {
-      await Otp.deleteOne({ _id: otpRecord._id }); // Clean up the OTP record
+      await Otp.deleteOne({ _id: otpRecord._id });
       return res.status(409).json({ error: "Email already registered as an Institution." });
     }
 
-    // Check if a student with this email already exists (safety check)
-    const existingStudent = await Student.findOne({ StudentEmail: InstitutionEmail }); // <--- CORRECTED THIS LINE
+    const existingStudent = await Student.findOne({ StudentEmail: InstitutionEmail });
     if (existingStudent) {
       await Otp.deleteOne({ _id: otpRecord._id }); // Clean up the OTP record
       return res.status(409).json({ error: "Email already registered as a Student." });
     }
 
-    // OTP is valid. Now, create the new institution.
     const newInstitution = await Institution.create({
       NameOfInstitution: otpRecord.name, // Use name from OTP record
       InstitutionEmail: otpRecord.email, // Use email from OTP record
       InstitutionPassword: otpRecord.password, // Use pre-hashed password from OTP record
     });
 
-    // Clean up the temporary OTP record
     await Otp.deleteOne({ _id: otpRecord._id });
 
-    // Now, send the welcome email after the institution is successfully created
     await sendWelcomeEmailInstitution(InstitutionEmail);
 
-    // Respond with the newly created institution
     res.status(201).json(newInstitution);
   } catch (error) {
     console.error("Error in registerInstitution:", error);
@@ -245,12 +222,11 @@ async function registerInstitution(req, res) {
   }
 }
 
-// Update the module exports to include the new functions
 module.exports = {
   addevent,
   getallevents,
   institutionmydetails,
   updateevent,
-  sendVerificationOtpInstitution, // New function for sending OTP
-  registerInstitution, // New function for verifying OTP and registering
+  sendVerificationOtpInstitution,
+  registerInstitution,
 };

@@ -2,8 +2,7 @@ const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 
 dotenv.config();
-
-// Create a transporter object using the default SMTP transport
+//transporter configuration
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT),
@@ -23,7 +22,7 @@ transporter.verify((err, success) => {
   }
 });
 
-// Function to send the OTP email (remains unchanged)
+// Function to send the OTP email
 const sendOtpEmail = async (email, otp) => {
   try {
     const info = await transporter.sendMail({
@@ -41,7 +40,7 @@ const sendOtpEmail = async (email, otp) => {
   }
 };
 
-// NEW: Function to send the welcome email specifically for students
+// Function to send the welcome email specifically for students
 const sendWelcomeEmailStudent = async (email) => {
   try {
     const info = await transporter.sendMail({
@@ -91,7 +90,7 @@ See you at the next big thing ✌️
   }
 };
 
-// NEW: Function to send the welcome email specifically for institutions
+// Function to send the welcome email specifically for institutions
 const sendWelcomeEmailInstitution = async (email) => {
   try {
     const info = await transporter.sendMail({
@@ -152,6 +151,6 @@ The EventInn Team 🚀
 
 module.exports = {
   sendOtpEmail,
-  sendWelcomeEmailStudent, // Export the student-specific welcome email
-  sendWelcomeEmailInstitution, // Export the institution-specific welcome email
+  sendWelcomeEmailStudent, 
+  sendWelcomeEmailInstitution, 
 };

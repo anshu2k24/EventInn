@@ -2,14 +2,12 @@ const Student = require("../models/Studentmodel");
 const Institution = require("../models/Institutionmodel"); // Ensure Institution model is imported
 const Event = require("../models/Eventmodel");
 const bcrypt = require("bcryptjs");
-const Otp = require("../models/Otpmodel"); // Corrected import to just 'Otp' assuming it's in models/Otp.js
-
-// Import the services and utilities
+const Otp = require("../models/Otpmodel"); 
 const {
   sendOtpEmail,
-  sendWelcomeEmailStudent, // Ensure this is imported correctly from emailService
-} = require("../services/emailServices"); // Corrected import path
-const { generateOtp } = require("../utils/OtpGenerator"); // Corrected import path
+  sendWelcomeEmailStudent,
+} = require("../services/emailServices");
+const { generateOtp } = require("../utils/OtpGenerator");
 
 async function studentmydetails(req, res) {
   const studentid = req.studentid;
@@ -36,7 +34,7 @@ async function enrollstudentinevent(req, res) {
     if (event.ParticipantId.includes(studentid)) {
       return res
         .status(409)
-        .json({ error: "student is already enrolled in event." }); // 409 Conflict
+        .json({ error: "student is already enrolled in event." }); 
     }
 
     // Enroll student
@@ -55,10 +53,6 @@ async function enrollstudentinevent(req, res) {
   }
 }
 
-/**
- * Step 1: Send OTP for Email Verification
- * This function will send an OTP email and save the temporary data.
- */
 async function sendVerificationOtp(req, res) {
   const { NameOfStudent, StudentEmail, StudentPassword } = req.body;
 
@@ -69,13 +63,11 @@ async function sendVerificationOtp(req, res) {
   }
 
   try {
-    // Check if email is already registered as a Student
     const existingStudent = await Student.findOne({ StudentEmail });
     if (existingStudent) {
       return res.status(409).json({ error: "Email already registered as a Student." });
     }
 
-    // Check if email is already registered as an Institution
     const existingInstitution = await Institution.findOne({ InstitutionEmail: StudentEmail }); // <--- CORRECTED THIS LINE
     if (existingInstitution) {
       return res.status(409).json({ error: "Email already registered as an Institution." });
@@ -110,10 +102,6 @@ async function sendVerificationOtp(req, res) {
   }
 }
 
-/**
- * Step 2: Verify OTP and Complete Registration
- * This function will verify the OTP, create the student, and then send the welcome email.
- */
 async function registerStudent(req, res) {
   const { StudentEmail, otp } = req.body;
 
@@ -128,7 +116,6 @@ async function registerStudent(req, res) {
       return res.status(400).json({ error: "Invalid or expired OTP." });
     }
 
-    // IMPORTANT: Add checks for name and password from otpRecord
     if (!otpRecord.name || !otpRecord.password) {
       console.error("OTP record missing name or password:", otpRecord);
       return res
@@ -138,17 +125,15 @@ async function registerStudent(req, res) {
         });
     }
 
-    // Final check for existing student before creating
     const existingStudent = await Student.findOne({ StudentEmail });
     if (existingStudent) {
       await Otp.deleteOne({ _id: otpRecord._id });
       return res.status(409).json({ error: "Email already registered as a Student." });
     }
     
-    // Final check if an institution with this email already exists (safety check)
-    const existingInstitution = await Institution.findOne({ InstitutionEmail: StudentEmail }); // <--- CORRECTED THIS LINE
+    const existingInstitution = await Institution.findOne({ InstitutionEmail: StudentEmail });
     if (existingInstitution) {
-      await Otp.deleteOne({ _id: otpRecord._id }); // Clean up the OTP record
+      await Otp.deleteOne({ _id: otpRecord._id });
       return res.status(409).json({ error: "Email already registered as an Institution." });
     }
 
@@ -164,12 +149,11 @@ async function registerStudent(req, res) {
 
     res.status(201).json(newStudent);
   } catch (error) {
-    console.error("Error in registerStudent:", error); // This will show the detailed error in your backend console
+    console.error("Error in registerStudent:", error);
     res.status(500).json({ error: "Error in registering student." });
   }
 }
 
-// Update the module exports to include the new functions
 module.exports = {
   studentmydetails,
   enrollstudentinevent,

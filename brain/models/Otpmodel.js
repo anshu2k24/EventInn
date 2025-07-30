@@ -5,28 +5,28 @@ const otpSchema = new mongoose.Schema(
         email: {
             type: String,
             required: true,
-            unique: true, // Ensures one pending OTP per email
+            unique: true,
         },
         otp: {
-            type: String, // Storing as a string is often better to handle leading zeros
-            required: true,
-        },
-        name: { // <--- ENSURE THIS FIELD IS PRESENT
             type: String,
             required: true,
         },
-        password: { // <--- ENSURE THIS FIELD IS PRESENT (stores the HASHED password)
+        name: { 
+            type: String,
+            required: true,
+        },
+        password: { 
             type: String,
             required: true,
         },
         createdAt: {
             type: Date,
             default: Date.now,
-            expires: 300, // MongoDB will automatically delete documents after 300 seconds (5 minutes)
+            expires: 300, 
         },
     },
     {
-        timestamps: true, // Adds createdAt and updatedAt fields
+        timestamps: true, 
     }
 );
 
