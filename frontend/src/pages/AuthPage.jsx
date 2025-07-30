@@ -29,7 +29,8 @@ export default function AuthPage() {
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false); // For login and institution register
 
   const navigate = useNavigate();
-  const base_url = "http://localhost:5000/services";
+  const base_url = "https://eventinn.onrender.com/services";
+  // const base_url = "http://localhost:5000/services";
 
   // Effect to check token validity 
   useEffect(() => {
